@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="lineManager">
+
+	<typeAlias alias="line" type="org.amaris.service.lineManager.Line" />
+	<typeAlias alias="stockView" type="org.amaris.service.lineManager.StockView" />
+
+	<resultMap id="LineMap" class="line">
+		<result property="id" column="id" />
+		<result property="lineName" column="line" />
+		<result property="startDate" column="startDate" />
+		<result property="endDate" column="EndDate" />
+		<result property="totalUnit" column="Unit" />
+		<result property="cuttingId" column="CuttingId" />
+		<result property="styleId" column="StyleId" />
+		<result property="receiveUnit" column="receiveUnit" />
+		<result property="status" column="status" />
+	</resultMap>
+	
+	
+		<resultMap id="StockViewMap" class="stockView">
+		<result property="stockDetailId" column="stockDetailId" />
+		<result property="stockQtyId" column="stockQtyId" />
+		<result property="stockName" column="stockName" />
+		<result property="stockPrice" column="stockPrice" />
+		<result property="stockQuantity" column="stockQuantity" />
+		<result property="totalPrice" column="totalPrice" />
+	</resultMap>
+
+
+	<insert id="insertLine" parameterClass="line">
+		INSERT INTO
+		line_mst
+		(id,line,startDate,EndDate,Unit,CuttingId,StyleId,receiveUnit, status)
+		VALUES
+		(#id#,#lineName#,#startDate#,#endDate#,#totalUnit#,#cuttingId#,#styleId#,#receiveUnit#,#status#)
+	</insert>
+	
+	<insert id="insertAccessories" parameterClass="stockView">
+		INSERT INTO
+		line_acc_link
+		(line_id,acc_name,acc_qty,acc_perPrice,stockQtyId)
+		VALUES
+		(#lineId#,#stockName#,#stockQuantity#,#stockPrice#,#stockQtyId#)
+	</insert>
+	
+	<insert id="updateLine" parameterClass="line">
+		UPDATE
+		line_mst
+		SET line=#lineName#, receiveUnit=#receiveUnit#, status=#status#
+		WHERE id=#id#
+	</insert>
+	
+	<select id="selectMaxId" resultClass="java.lang.Integer">
+		SELECT MAX(id) FROM line_mst
+	</select>
+
+	<select id="selectAll" resultMap="LineMap">
+		SELECT * FROM line_mst
+	</select>
+
+	<select id="selectCompleteLine" resultMap="LineMap"
+		parameterClass="java.lang.String">
+		SELECT * FROM line_mst WHERE status = #value#
+	</select>
+
+	<select id="selectUnCompleteLine" resultMap="LineMap"
+		parameterClass="java.lang.String">
+		SELECT * FROM line_mst WHERE status = #value#
+	</select>
+	
+	<select id="selectAllStockView" resultMap="StockViewMap">
+		SELECT * FROM stockview
+	</select>
+	
+	<select id="selectStockViewById" resultMap="StockViewMap"
+		parameterClass="java.lang.String">
+		SELECT * FROM stockview WHERE stockName LIKE '%$value$%'
+	</select>
+
+</sqlMap>

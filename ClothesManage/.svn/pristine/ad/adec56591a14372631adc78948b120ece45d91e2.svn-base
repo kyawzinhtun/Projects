@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="cuttingManager">
+    
+    <typeAlias alias="cuttingMain" type="org.amaris.service.cuttingManage.CuttingMain" />
+     <typeAlias alias="cutItemValue" type="org.amaris.service.balanceManage.BalanceDetail" />
+     
+     <resultMap id="cuttingMainMap" class="cuttingMain">
+        <result property="cuttingId" column="cuttingID" />  
+  		<result property="cuttingDate" column="cuttingDate" />
+  		<result property="styleID" column="styleCode" />
+  		<result property="size" column="cuttingSize" />
+  		<result property="perUnitPrice" column="firstPrice" />
+  		<result property="perIncludeUnitPrice" column="secondPrice" />
+  		<result property="totalUnitPrice" column="totalUnitPrice" />
+  		<result property="totalUnit" column="totalUnit" />
+	</resultMap>
+	
+        <resultMap id="CuttingDetail" class="cutItemValue">
+        <result property="stockQtyId" column="stockQtyDetailId" />  
+  		<result property="cuttingId" column="cuttingId" />
+  		<result property="stockQuantity" column="cutValueYard" />
+  		<result property="qtyInches" column="cutInches" />
+  		<result property="stockPrice" column="cutPrice" />
+  		<result property="detailUnitCount" column="cutUnit" />
+  		</resultMap>
+        
+    <select id="selectMaxId" resultClass="java.lang.Integer">
+	       SELECT MAX(cutId) FROM cutting
+	</select>
+        
+    <insert id="insertMain" parameterClass="cuttingMain">
+		INSERT INTO
+		cutting (cuttingID,cuttingDate,styleCode,cuttingSize,firstPrice,secondPrice,totalUnitPrice,totalUnit)
+		VALUES (#cuttingId#,#cuttingDate#,#styleID#,#size#,#perUnitPrice#,#perIncludeUnitPrice#,#totalUnitPrice#,#totalUnit#)
+	</insert>
+	
+    
+    
+    <insert id="cutDetail" parameterClass="cutItemValue">
+		INSERT INTO
+		cutting_detail (cuttingId,stockQtyDetailId,cutValueYard,cutInches,cutPrice,cutUnit)
+		VALUES (#cuttingId#,#stockQtyId#,"stockQuantity",#qtyInches#,#totalPrice#,#detailUnitCount#)
+	</insert>
+	
+    <update id="masterUpdate" parameterClass="cutItemValue">
+        UPDATE stock_qty_detail
+        SET
+        stockQuantity = #stockQuantity#,
+        totalPrice = #totalPrice#
+        WHERE stockQtyId = #stockQtyId#
+        
+    </update>
+    
+    <select id="selectKey" resultMap="cuttingMainMap" parameterClass="java.lang.String">
+	        SELECT * FROM cutting WHERE cuttingID LIKE '%$value$%'
+	</select>
+	
+    
+    
+    <select id="selectbycuttingId" resultMap="CuttingDetail" parameterClass="java.lang.String">
+	        SELECT * FROM cutting_detail WHERE cuttingID = #value#
+	</select>
+    
+    
+    
+</sqlMap>

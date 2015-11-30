@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="inventoryManager">
+    
+    <typeAlias alias="style" type="org.amaris.service.inventoryManage.Style" />
+    <typeAlias alias="styleInclude" type="org.amaris.service.inventoryManage.StyleInclude" />
+
+	<resultMap id="styleMap" class="style">
+		<result property="styleId" column="styleId" />
+  		<result property="StyleName" column="styleName" />
+  		<result property="remark" column="remark" />
+  		<result property="imagePath" column="imagePath" />
+  		<result property="styleProduceDate" column="styleProduceDate" />
+  		<result property="size" column="size" />
+	</resultMap>
+	
+	<resultMap id="styleIncludeMap" class="styleInclude">
+		<result property="stockInId" column="stockInId" />
+  		<result property="stockName" column="stockName" />
+  		<result property="styleCode" column="styleCode" />
+	</resultMap>
+    
+    
+    <insert id="insertStyle" parameterClass="org.amaris.service.inventoryManage.Style">
+		INSERT INTO
+		style_mst (styleName,remark,imagePath,styleProduceDate,size)
+		VALUES (#styleName#,#remark#,#imagePath#,#styleProduceDate#,#size#)
+	</insert>
+	
+   <insert id="style_detail" parameterClass="org.amaris.service.inventoryManage.StyleInclude">
+		INSERT INTO
+		style_detail (stockInId,stockName,styleCode)
+		VALUES (#stockInId#,#stockName#,#styleCode#)
+	</insert>
+	
+   
+   <select id="findAllStyle" resultMap="styleMap">
+          SELECT * 
+          FROM style_mst
+    </select>
+    
+    <select id="SytleByFilter" resultMap="styleMap" parameterClass="java.lang.String">
+          SELECT * 
+          FROM style_mst WHERE styleName LIKE '%$value$%'
+    </select>
+    
+    
+    
+    <select id="SelectStyleDetail" resultMap="styleMap" parameterClass="java.lang.String">
+          SELECT * 
+          FROM style_mst WHERE styleName = #value#
+    </select>
+    
+   	<select id="SelectStyleIncludeDetail" resultMap="styleIncludeMap" parameterClass="java.lang.String">
+          SELECT * 
+          FROM style_detail WHERE styleCode = #value#
+    </select>
+    
+   	<delete id="deleteStyleMst" parameterClass="java.lang.String">
+        DELETE FROM style_mst WHERE styleName=#value#        
+    </delete>
+    
+    <delete id="deleteStyleInclude" parameterClass="java.lang.String">
+        DELETE FROM style_detail WHERE styleCode=#value#        
+    </delete>
+    
+   <!-- 
+   <delete id="deleteItem" parameterClass="java.lang.String">
+        DELETE FROM inventorymanager WHERE itemId=#value#        
+    </delete>
+    
+   	<select id="findItemId" resultMap="itemMap" parameterClass="java.lang.String" >
+	        SELECT * FROM inventorymanager WHERE itemId=#value# 
+	</select>
+	
+   	<update id="UpdateItem" parameterClass="inventoryItem">
+         UPDATE inventorymanager SET 
+         itemName=#itemName#,
+         imagePath=#imagePath#,
+         remarks=#remarks#,
+         inv_date=#date#
+         WHERE  itemId = #itemId#
+    </update>
+	
+     
+	   <select id="findAll" resultClass="com.msec.des.common.entities.AccountMst" parameterClass="java.lang.String" >
+	        SELECT * FROM account_mst
+	    </select>
+	    
+	    <insert id="insertAccount" parameterClass="com.msec.des.common.entities.AccountMst">
+			INSERT INTO
+			account_mst (account_id,name,nrc,address,phone_no,branch,total_share,myan_name)
+			VALUES (#account_id#,#name#,#nrc#,#address#,#phone_no#,#branch#,#total_share#,#myan_name#)
+		</insert>
+		<select id="findByCode" resultClass="com.msec.des.common.entities.AccountMst" parameterClass="java.lang.String" >
+	        SELECT * FROM account_mst WHERE dividence_code = #value#
+	    </select>
+   -->
+</sqlMap>

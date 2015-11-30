@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="other">
+    
+    <typeAlias alias="OtherCrudObject" type="org.amaris.service.othercrud.OtherCrudObject" />
+    <resultMap id="othercrudMap" class="OtherCrudObject">
+    
+        <result property="id" column="id" />  
+  		<result property="sname" column="sname" />
+  		<result property="receiver" column="sreceiver" />
+  		<result property="startDate" column="startDate" />
+  		<result property="endDate" column="endDate" />
+  		<result property="qty" column="qty" />
+  		<result property="receivedunit" column="receivedunit"/>
+  		<result property="status" column="status" />
+  		  		
+	</resultMap>
+    
+    <typeAlias alias="OtherCrudDateObject" type="org.amaris.service.othercrud.OtherCrudDate" />
+    <resultMap id="othercruddateMap" class="OtherCrudDateObject">
+       
+       <result property="startDate" column="startDate" />
+  	   <result property="endDate" column="endDate" />
+  		
+	</resultMap>
+        	
+    <select id="selectMaxId" resultClass="java.lang.Integer">
+	       SELECT MAX(id) FROM other_product_mst
+	</select>
+	               
+    <insert id="insertOtherCrud" parameterClass="OtherCrudObject">
+		INSERT INTO
+		other_product_mst (id,sname,sreceiver,startDate,endDate,qty,receivedunit,status)
+		VALUES (#id#,#sname#,#receiver#,#startDate#,#endDate#,#qty#,#receivedunit#,#status#)
+	</insert>
+	    
+    <update id="updateOtherCrud" parameterClass="OtherCrudObject">
+		UPDATE
+		other_product_mst SET sname=#sname#,sreceiver=#receiver#,startDate=#startDate#,endDate=#endDate#,qty=#qty#,receivedunit=#receivedunit#,status=#status#
+		WHERE id=#id#
+    </update>
+        
+    <delete id="deleteOtherCrud" parameterClass="java.lang.String">
+	    DELETE FROM
+		other_product_mst 
+		WHERE id=#value#
+    </delete>
+    
+    <select id="selectAll" resultMap="othercrudMap">
+	        SELECT * FROM other_product_mst 
+	</select>
+	
+    <select id="selectByID" resultMap="othercrudMap" parameterClass="java.lang.String">
+	        SELECT * FROM other_product_mst WHERE id=#value#
+	</select>
+	
+    <select id="selectByDate" resultMap="othercrudMap" parameterClass="OtherCrudDateObject">
+	        SELECT * FROM other_product_mst WHERE startDate=#startDate# AND endDate=#endDate#
+	</select>
+	    
+    <select id="selectByStockNameFilter" resultMap="othercrudMap" parameterClass="java.lang.String">
+          SELECT * 
+          FROM other_product_mst WHERE sname LIKE '%$value$%'
+    </select>
+</sqlMap>

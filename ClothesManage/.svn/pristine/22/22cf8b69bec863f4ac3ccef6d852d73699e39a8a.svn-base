@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/presentation"/>
+	<classpathentry kind="src" path="src/service"/>
+	<classpathentry kind="src" path="src/persistence"/>
+	<classpathentry kind="src" path="src/util"/>
+	<classpathentry kind="src" path="src/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_01"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/ibatis-dao-2.jar"/>
+	<classpathentry kind="lib" path="lib/ibatis-sqlmap-2.3.4.726.jar"/>
+	<classpathentry kind="lib" path="lib/jcalendarbutton-1.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.aop-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.asm-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.aspects-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.beans-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.context.support-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.expression-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.instrument-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.jdbc-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.orm-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.oxm-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.test-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/org.springframework.transaction-3.0.4.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/swingx-0.9.5-2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-3.2.0-alpha-bin.jar"/>
+	<classpathentry kind="lib" path="imapper"/>
+	<classpathentry kind="lib" path="img"/>
+	<classpathentry kind="lib" path="lib/jxl.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
