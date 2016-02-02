@@ -1,0 +1,149 @@
+package org.amaris.persistence.lineManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.amaris.service.lineManager.Line;
+import org.amaris.service.lineManager.StockView;
+import org.amaris.util.AValidator;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository(value = "LineManageDAOManager")
+public class LineManageDAOManager extends SqlMapClientDaoSupport implements ILineManageDAOManager {
+
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void insert(Line line, List<StockView> accessoreisList) {
+		try{
+			getSqlMapClientTemplate().insert("lineManager.insertLine", line);
+			Integer id = (Integer) getSqlMapClientTemplate().queryForObject("lineManager.selectMaxId");
+			String idlength = String.valueOf(id);
+			String finalId = idlength;
+			for(int i = idlength.length() ; i < AValidator.ID_MAX_LENGTH; i++) {
+				finalId = "0"+finalId;
+			}
+			insertAcc(finalId, accessoreisList);
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	@Transactional(propagation=Propagation.REQUIRED)
+	public void insertAcc(String id, List<StockView> accessoriesList) {
+		
+		try{
+			for(StockView sv : accessoriesList) {
+				sv.setLineId(id);
+				getSqlMapClientTemplate().insert("lineManager.insertAccessories", sv);
+			}
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<Line> selectAllLine() {
+		List<Line> resultList = new ArrayList<>();
+		try{
+			resultList = getSqlMapClientTemplate().queryForList("lineManager.selectAll");
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resultList;
+	}
+
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<Line> selectAllCompleteLine(String status) {
+		List<Line> resultList = new ArrayList<>();
+		try{
+			resultList = getSqlMapClientTemplate().queryForList("lineManager.selectCompleteLine", status);
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resultList;
+	}
+
+	@Transactional(propagation=Propagation.REQUIRED)
+	public List<Line> selectAllUnCompleteLine(String status) {
+		List<Line> resultList = new ArrayList<>();
+		try{
+			resultList = getSqlMapClientTemplate().queryForList("lineManager.selectUnCompleteLine", status);
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resultList;
+	}
+
+	@Override
+	public void editLine(List<Line> lineList) {
+		// TODO Auto-generated method stub
+		
+			try{
+				for (Line line : lineList) {
+				 getSqlMapClientTemplate().update("lineManager.updateLine", line);
+				}
+			} catch (DataAccessException de){
+			   de.printStackTrace();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+		
+		
+	}
+
+	@Override
+	public List<StockView> selectAll() {
+		List<StockView> resultList = new ArrayList<>();
+		try{
+			resultList = getSqlMapClientTemplate().queryForList("lineManager.selectAllStockView");
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resultList;
+	}
+
+	@Override
+	public List<StockView> selectById(String id) {
+		List<StockView> resultList = new ArrayList<>();
+		try{
+			resultList = getSqlMapClientTemplate().queryForList("lineManager.selectStockViewById", id);
+		} catch (DataAccessException de){
+		   de.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return resultList;
+	}
+	
+	
+	
+	
+	
+	
+
+}

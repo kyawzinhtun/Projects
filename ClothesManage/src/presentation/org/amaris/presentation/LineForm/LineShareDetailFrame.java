@@ -1,0 +1,411 @@
+package org.amaris.presentation.LineForm;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+
+import java.awt.Font;
+
+import javax.swing.JTextPane;
+import javax.swing.JButton;
+
+import org.amaris.presentation.BalanceManageForm.ButtonDeleteStock;
+import org.amaris.presentation.BalanceManageForm.DetailItemBalanceFrame;
+import org.amaris.presentation.CuttingManageForm.CuttingManageFrame;
+import org.amaris.presentation.inventoryManageForm.ButtonRenderer;
+import org.amaris.service.balanceManage.BalanceDetail;
+import org.amaris.service.balanceManage.StockBalance;
+import org.amaris.service.cuttingManage.CuttingMain;
+import org.amaris.service.cuttingManage.DraffCut;
+import org.amaris.service.lineManager.ILineServiceManager;
+import org.amaris.service.lineManager.Line;
+import org.amaris.service.lineManager.StockView;
+import org.amaris.util.BasicBeanFactory;
+import org.apache.commons.lang.StringUtils;
+import org.jdesktop.swingx.JXDatePicker;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+
+public class LineShareDetailFrame extends JFrame {
+
+	private JPanel contentPane;
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	public static LineShareDetailFrame draffEditingFrame;
+	public static HashMap<String ,List<StockView>> lineAccessoriesMap = new HashMap<>();
+	JTextPane txtCuttingID = new JTextPane();
+	private JTable table;
+	private DefaultTableModel dtm;
+	private JScrollPane scrollPane;
+	private List<CuttingMain> detailList = new ArrayList<CuttingMain>();
+	private JTextField txtLine;
+	private JTextField txtUnit;
+	private JXDatePicker startDatePicker = new JXDatePicker();
+	private JXDatePicker endDatePicker = new JXDatePicker();
+	public int rowCount=0;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private ILineServiceManager iLineServiceManager;	
+	private AccessoriesLinePopUp accessoriesLinePopUp;
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					LineShareDetailFrame frame = new LineShareDetailFrame();
+					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+					frame.setVisible(true);
+					frame.setResizable(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public static LineShareDetailFrame getInstance() {
+		draffEditingFrame = new LineShareDetailFrame();
+		draffEditingFrame.setVisible(true);
+		draffEditingFrame.setResizable(false);
+		return draffEditingFrame;
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public LineShareDetailFrame() {
+		lineAccessoriesMap=new HashMap<>();
+		setTitle("Line Detail");
+		setBounds(100, 100, 796, 590);
+		overrideDefaultTableModle();
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		iLineServiceManager = (ILineServiceManager) BasicBeanFactory.getBean("LineServiceManager");		
+		JLabel lblId = new JLabel("Cutting ID");
+		lblId.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		lblId.setBounds(10, 27, 98, 24);
+		contentPane.add(lblId);
+		
+		txtCuttingID.setBounds(119, 27, 135, 24);
+		txtCuttingID.setText(CuttingManageFrame.paramCuttingCode);
+		contentPane.add(txtCuttingID);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int i=0;
+				while(i<dtm.getRowCount()) {
+					Line line = new Line();
+					line.setCuttingId(txtCuttingID.getText());
+					line.setLineName(dtm.getValueAt(i, 1)+"");
+					line.setStyleId(dtm.getValueAt(i, 2)+"");
+					line.setTotalUnit(dtm.getValueAt(i, 3)+"");
+					line.setStartDate(dtm.getValueAt(i, 4)+"");
+					line.setEndDate(dtm.getValueAt(i, 5)+"");
+					List<StockView> accessoresList = lineAccessoriesMap.get(i+1+"");
+					saveline(line, accessoresList);
+					i++;
+				}
+				JOptionPane.showMessageDialog(null, "Save Success Full.",
+						"Save Info", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		btnSave.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		btnSave.setBounds(10, 509, 89, 33);
+		contentPane.add(btnSave);
+		
+		JButton btnClear = new JButton("Clear");
+		btnClear.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		btnClear.setBounds(124, 509, 89, 33);
+		contentPane.add(btnClear);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "stock detail", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBounds(10, 259, 714, 230);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+        DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object
+                value, boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+                setHorizontalAlignment(JLabel.CENTER);
+                return this;
+            }
+        };
+		
+		String[] columnNames = {
+                "No",
+                "Line Name",
+                "Style Id",
+                "Unit",
+                "Start Date",
+                "End Date",
+                "Accessories",
+                "Remove",
+         };
+
+		Object[][] data={};
+		dtm.setDataVector(data, columnNames);
+		
+		table = new JTable();
+		table.setBounds(25, 35, 663, 192);
+		Font font = new Font("Times New Roman", Font.PLAIN, 16);
+		table.setFont(font);
+		table.setModel(dtm);
+		table.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
+		
+		// align checkbox to center
+		table.getColumnModel().getColumn(0).setCellRenderer(r);
+		table.getColumnModel().getColumn(1).setCellRenderer(r);
+		table.getColumnModel().getColumn(2).setCellRenderer(r);
+		table.getColumnModel().getColumn(3).setCellRenderer(r);
+		table.getColumnModel().getColumn(4).setCellRenderer(r);
+		table.getColumnModel().getColumn(5).setCellRenderer(r);
+		table.getColumnModel().getColumn(6).setCellRenderer(r);
+		
+		table.addMouseListener(new CheckBoxHandler());
+		table.getColumn("Remove").setCellRenderer(new ButtonRenderer());
+		table.getColumn("Remove").setCellEditor(new ButtonDeleteStock(new JCheckBox()));
+		
+		table.getColumn("Accessories").setCellRenderer(new ButtonRenderer());
+		table.getColumn("Accessories").setCellEditor(new ButtonDeleteStock(new JCheckBox()));
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 23, 694, 196);
+		panel.add(scrollPane);
+		scrollPane.setViewportView(table);	
+		
+		JLabel lblLineA = new JLabel("Line ");
+		lblLineA.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblLineA.setBounds(10, 93, 59, 24);
+		contentPane.add(lblLineA);
+		
+		JLabel lblLineB = new JLabel("Unit");
+		lblLineB.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblLineB.setBounds(10, 128, 59, 24);
+		contentPane.add(lblLineB);
+		
+		txtLine = new JTextField();
+		txtLine.setBounds(119, 96, 135, 20);
+		contentPane.add(txtLine);
+		txtLine.setColumns(10);
+		
+		txtUnit = new JTextField();
+		txtUnit.setColumns(10);
+		txtUnit.setBounds(119, 131, 135, 20);
+		contentPane.add(txtUnit);
+		
+
+		
+		startDatePicker.setDate(Calendar.getInstance().getTime());
+	//	startDatePicker.setFormats(new dateFormatter("dd-MM-yyyy"));
+		startDatePicker.setBounds(400, 90, 150, 28);
+		startDatePicker.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		contentPane.add(startDatePicker);
+    
+		endDatePicker.setDate(Calendar.getInstance().getTime());
+		//endDatePicker.setFormats(new dateFormatter("dd-MM-yyyy"));
+		endDatePicker.setBounds(400, 125, 150, 28);
+		endDatePicker.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		contentPane.add(endDatePicker);
+		
+		JLabel lblStartDate = new JLabel("Start Date");
+		lblStartDate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblStartDate.setBounds(296, 93, 59, 24);
+		contentPane.add(lblStartDate);
+		
+		JLabel lblEndDate = new JLabel("End Date");
+		lblEndDate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblEndDate.setBounds(296, 128, 59, 24);
+		contentPane.add(lblEndDate);
+		
+		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String startDate = dateFormatter.format(startDatePicker.getDate());
+				String endDate = dateFormatter.format(endDatePicker.getDate());
+				String lineName = txtLine.getText();
+				String unit = txtUnit.getText();
+				String styleId = textField.getText();
+				dtm.addRow(new Object[]{
+						rowCount = rowCount+1,
+						lineName,
+						styleId,
+						unit,
+						startDate,
+						endDate,
+						"Accessories",
+						"Remove"
+				});
+				
+				
+			}
+		});
+		btnAdd.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		btnAdd.setBounds(545, 189, 89, 33);
+		contentPane.add(btnAdd);
+		
+		JLabel lblStyle = new JLabel("Style");
+		lblStyle.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblStyle.setBounds(10, 163, 59, 24);
+		contentPane.add(lblStyle);
+		
+		textField = new JTextField();
+		textField.setColumns(10);
+		textField.setBounds(119, 166, 135, 20);
+		contentPane.add(textField);
+		
+		JLabel lblGrossUnit = new JLabel("Gross Unit");
+		lblGrossUnit.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblGrossUnit.setBounds(296, 163, 89, 24);
+		contentPane.add(lblGrossUnit);
+		
+		textField_1 = new JTextField();
+		textField_1.setEditable(false);
+		textField_1.setColumns(10);
+		textField_1.setBounds(400, 164, 135, 20);
+		contentPane.add(textField_1);
+		
+		JLabel lblActuralUnit = new JLabel("Actual Unit");
+		lblActuralUnit.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+		lblActuralUnit.setBounds(296, 198, 89, 24);
+		contentPane.add(lblActuralUnit);
+		
+		textField_2 = new JTextField();
+		textField_2.setColumns(10);
+		textField_2.setBounds(400, 201, 135, 20);
+		contentPane.add(textField_2);
+	}
+	
+	private void overrideDefaultTableModle(){
+    	dtm = new DefaultTableModel() {
+    		
+     	    public boolean isCellEditable(int row, int col) {
+     	        //Note that the data/cell address is constant,
+     	        //no matter where the cell appears onscreen.
+     	        if (col >= 1 && col <=5) {
+     	            return false;
+     	        } else {
+     	            return true;
+     	        }
+     	    }
+    	};
+    }
+
+	public List<CuttingMain> getDetailList() {
+		return detailList;
+	}
+
+	public void setDetailList(List<CuttingMain> detailList) {
+		this.detailList = detailList;
+		initDataList(detailList);
+	}
+	
+	private void initDataList(List<CuttingMain> detailList) {
+		List<CuttingMain> resultList = detailList;
+		int i=0;
+		for(CuttingMain bm : resultList) {
+			if(i==0) {
+				txtCuttingID.setText(bm.getCuttingId());
+				textField_1.setText(bm.getTotalUnit());
+			}
+			
+		
+		}
+	}
+	
+	public void saveline(Line line, List<StockView> accessoresList) {
+		try {
+			iLineServiceManager.addLine(line, accessoresList);
+		}
+		catch(Exception ex) {
+			JOptionPane.showMessageDialog(null, "Fail to Insert line.",
+					"Error Info", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+class CheckBoxHandler implements MouseListener {
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			 int selectedRow = table.getSelectedRow();  
+			 int selectedCol = table.getSelectedColumn();
+
+			 if(selectedCol == 7) {
+				 dtm.removeRow(selectedRow);
+				 rowCount -=1;
+			 }
+			 else if(selectedCol == 6) {
+				 accessoriesLinePopUp=AccessoriesLinePopUp.getInstance(dtm.getValueAt(selectedRow, 0)+"");
+			 }
+			 else if(selectedCol == 0) {
+				 showAccessoriesList(dtm.getValueAt(selectedRow, 0)+"");
+			 }
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+		}
+		
+	}
+	
+	public void showAccessoriesList(String rowNumber) {
+		StringBuffer sb = new StringBuffer();		
+		List<StockView> stockResult = lineAccessoriesMap.get(rowNumber);
+		AccessoriesDetailPopUp accessories=AccessoriesDetailPopUp.getInstance();
+		accessories.setStockViewList(stockResult);
+//		accessories.setVisible(true);
+//		for(StockView sv : stockResult) {
+//			sb.append("name : "+ sv.getStockName()+" ");
+//			sb.append("qty : " + sv.getStockQuantity()+" ");
+//			sb.append("per price : " +sv.getStockPrice());
+//			sb.append("\n");
+//		}
+		
+//		return sb.toString();
+	}
+
+}

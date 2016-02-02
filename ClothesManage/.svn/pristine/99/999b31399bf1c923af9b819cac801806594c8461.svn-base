@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="stockBalanceManager">
+    
+    <typeAlias alias="StockBalance" type="org.amaris.service.balanceManage.StockBalance" />
+    
+     <typeAlias alias="BalanceDetail" type="org.amaris.service.balanceManage.BalanceDetail" />
+    
+    <resultMap id="StockMap" class="StockBalance">
+		<result property="stockId" column="stockId" />
+  		<result property="stockInId" column="stockInId" />
+  		<result property="stockName" column="stockName" />
+  		<result property="unit" column="unit" />
+  		<result property="stockInDate" column="stockInDate" />
+	</resultMap>
+	
+   <resultMap id="StockDesDetailMap" class="StockBalance">
+  		<result property="stockInId" column="stockInId" />
+  		<result property="stockName" column="stockName" />
+  		<result property="unit" column="unit" />
+  		<result property="stockInDate" column="stockInDate" />
+	</resultMap>
+	
+      <resultMap id="StockQtyDetailMap" class="BalanceDetail">
+        <result property="stockQtyId" column="stockQtyId" />  
+  		<result property="stockInId" column="stockInId" />
+  		<result property="stockPrice" column="stockPrice" />
+  		<result property="stockQuantity" column="stockQuantity" />
+  		<result property="totalPrice" column="totalPrice" />
+  		<result property="detailUnitCount" column="detailUnitCount" />
+  		<result property="colorNo" column="colorNo" />
+  		
+	</resultMap>
+	
+    <insert id="insert_StockBalance_Mst" parameterClass="StockBalance">
+		INSERT INTO
+		stock_master (stockInId)
+		VALUES (#stockInId#)
+	</insert>
+	
+   <insert id="insert_stock_des_detail" parameterClass="StockBalance">
+		INSERT INTO
+		stock_des_detail (stockName,stockInDate,unit,stockInId)
+		VALUES (#stockName#,#stockInDate#,#unit#,#stockInId#)
+	</insert>
+	
+      <insert id="insert_stock_qty_detail" parameterClass="BalanceDetail">
+		INSERT INTO
+		stock_qty_detail (stockPrice,stockQuantity,totalPrice,detailUnitCount,stockInId,colorNo)
+		VALUES (#stockPrice#,#stockQuantity#,#totalPrice#,#detailUnitCount#,#stockInId#,#colorNo#)
+	</insert>
+	
+    <delete id="delete_StockBalance_Mst" parameterClass="java.lang.String">
+        DELETE FROM stock_master WHERE stockInId=#value#        
+    </delete>
+    
+    <delete id="delete_stock_des_detail" parameterClass="java.lang.String">
+        DELETE FROM stock_des_detail WHERE stockInId=#value#        
+    </delete>
+    
+    <delete id="delete_stock_qty_detail" parameterClass="java.lang.String">
+        DELETE FROM stock_qty_detail WHERE stockInId=#value#        
+    </delete>
+    
+    <select id="selectMaxId" resultClass="java.lang.Integer">
+	       SELECT MAX(stockDetailId) FROM stock_des_detail
+	</select>
+    
+    <select id="selectByKey" resultMap="StockDesDetailMap" parameterClass="java.lang.String">
+	        SELECT * FROM stock_des_detail WHERE stockDetailId LIKE '%$value$%'
+	</select>
+	
+   	<select id="selectSQDByKey" resultMap="StockQtyDetailMap" parameterClass="java.lang.String">
+	        SELECT * FROM stock_qty_detail WHERE stockInId = #value#
+	</select>
+	
+   	<select id="selectByNameKey" resultMap="StockDesDetailMap" parameterClass="java.lang.String">
+	        SELECT * FROM stock_des_detail WHERE stockName LIKE '%$value$%'
+	</select>
+
+    <!--  
+	<resultMap id="StockMap" class="StockBalance">
+		<result property="stockId" column="stockId" />
+  		<result property="itemId" column="itemId" />
+  		<result property="stockName" column="stockName" />
+  		<result property="stockPrice" column="stockPrice" />
+  		<result property="stockQuantity" column="stockQuantity" />
+  		<result property="unit" column="unit" />
+  		<result property="totalPrice" column="totalPrice" />
+  		<result property="stockInDate" column="stockInDate" />
+		<result property="id" column="Id" />
+	</resultMap>
+	-->
+	
+	  <!--  
+	<update id="UpdateStockBalance" parameterClass="StockBalance">
+         UPDATE stock_mst SET 
+         stockId=#stockId#,
+         itemId=#itemId#,
+         stockName=#stockName#,
+         stockPrice=#stockPrice#,
+         stockQuantity=#stockQuantity#,
+         unit=#unit#,
+         totalPrice=#totalPrice#,
+         stockInDate=#stockInDate#
+         WHERE  Id = #id#
+    </update>
+    
+    
+    <insert id="insertStockBalance" parameterClass="StockBalance">
+		INSERT INTO
+		stock_mst (stockId,itemId,stockName,stockPrice,stockQuantity,unit,totalPrice,stockInDate)
+		VALUES (#stockId#,#itemId#,#stockName#,#stockPrice#,#stockQuantity#,#unit#,#totalPrice#,#stockInDate#)
+	</insert>
+	
+  
+   <select id="selectByFilter" resultMap="StockMap" parameterClass="java.lang.String" >
+	        SELECT * FROM stock_mst WHERE itemId=#value# 
+	</select>
+	
+     
+    <select id="findAllItem" resultMap="itemMap">
+          SELECT * 
+          FROM inventorymanager
+    </select>
+    
+   <delete id="deleteItem" parameterClass="java.lang.String">
+        DELETE FROM inventorymanager WHERE itemId=#value#        
+    </delete>
+    
+   	<select id="findItemId" resultMap="itemMap" parameterClass="java.lang.String" >
+	        SELECT * FROM inventorymanager WHERE itemId=#value# 
+	</select>
+	
+
+	   <select id="findAll" resultClass="com.msec.des.common.entities.AccountMst" parameterClass="java.lang.String" >
+	        SELECT * FROM account_mst
+	    </select>
+	    
+	    <insert id="insertAccount" parameterClass="com.msec.des.common.entities.AccountMst">
+			INSERT INTO
+			account_mst (account_id,name,nrc,address,phone_no,branch,total_share,myan_name)
+			VALUES (#account_id#,#name#,#nrc#,#address#,#phone_no#,#branch#,#total_share#,#myan_name#)
+		</insert>
+		<select id="findByCode" resultClass="com.msec.des.common.entities.AccountMst" parameterClass="java.lang.String" >
+	        SELECT * FROM account_mst WHERE dividence_code = #value#
+	    </select>
+   -->
+</sqlMap>

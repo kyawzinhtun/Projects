@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="supplier">
+    
+    <typeAlias alias="supplierObject" type="org.amaris.service.SupplierManager.Supplier" />
+     <resultMap id="SupplierMap" class="SupplierObject">
+        <result property="id" column="id" />  
+  		<result property="supplierName" column="sname"/>
+		<result property="supplierAddress" column="saddress"/>
+		<result property="supplierPh" column="phone"/>
+	</resultMap>
+            
+    <insert id="insertSupplier" parameterClass="SupplierObject">
+		INSERT INTO
+		supplier_mst (id,sname,saddress,phone)
+		VALUES (#id#,#supplierName#,#supplierAddress#,#supplierPh#)
+	</insert>
+	    
+    <update id="updateSupplier" parameterClass="SupplierObject">
+		UPDATE
+		supplier_mst SET sname=#supplierName#,saddress=#supplierAddress#,phone=#supplierPh#
+		WHERE id=#id#
+        	       
+	</update>
+    
+    
+    <delete id="deleteSupplier" parameterClass="java.lang.String">
+	    DELETE FROM
+		supplier_mst 
+		WHERE id=#value#
+           
+	</delete>
+    
+    <select id="selectAll" resultMap="SupplierMap">
+	        SELECT * FROM supplier_mst 
+	</select>
+	
+    <select id="selectMaxId" resultClass="java.lang.Integer">
+	       SELECT MAX(id) FROM supplier_mst
+	</select>
+    
+    <select id="selectByID" resultMap="SupplierMap" parameterClass="java.lang.String">
+	        SELECT * FROM supplier_mst where id=#value#
+	</select>
+	
+    
+    <select id="selectByNameFilter" resultMap="SupplierMap" parameterClass="java.lang.String">
+          SELECT * 
+          FROM supplier_mst WHERE sname LIKE '%$value$%'
+    </select>
+	
+</sqlMap>

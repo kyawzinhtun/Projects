@@ -1,0 +1,90 @@
+package org.amaris.service.balanceManage;
+
+import java.util.List;
+
+public class StockBalance {
+	
+	// Auto Generated Id
+	private int stockId;
+	
+	// incoming stock Id manually add by customer
+	private String stockInId;
+	
+	// stock Name
+	private String stockName;
+	
+	private String unit;
+	
+	// stock in date
+	private String stockInDate;
+	
+	private List<BalanceDetail> balanceDetail;
+
+	
+	public StockBalance() {
+		
+	}
+
+
+	public int getStockId() {
+		return stockId;
+	}
+
+
+	public void setStockId(int stockId) {
+		this.stockId = stockId;
+	}
+
+
+	public String getStockInId() {
+		return stockInId;
+	}
+
+
+	public void setStockInId(String stockInId) {
+		this.stockInId = stockInId;
+	}
+
+
+	public String getStockName() {
+		return stockName;
+	}
+
+
+	public void setStockName(String stockName) {
+		this.stockName = stockName;
+	}
+
+
+	public void setStockInDate(String stockInDate) {
+		this.stockInDate = stockInDate;
+	}
+
+
+	public List<BalanceDetail> getBalanceDetail() {
+		return balanceDetail;
+	}
+
+
+	public void setBalanceDetail(List<BalanceDetail> balanceDetail) {
+		this.balanceDetail = balanceDetail;
+	}
+
+
+	public String getUnit() {
+		return unit;
+	}
+
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
+
+	public String getStockInDate() {
+		return stockInDate;
+	}
+	
+	
+	
+}
